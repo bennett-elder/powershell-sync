@@ -29,13 +29,18 @@ function DownloadFolder (
             # (note that $synchronizationResult.Downloads is the only operation
             # collection of SynchronizationResult that can contain any items,
             # as we are not removing nor uploading anything)
-    
+
+            $successful = [System.Collections.ArrayList]::new()
+            $failed = [System.Collections.ArrayList]::new()
+
             # Iterate over every download
             foreach ($download in $synchronizationResult.Downloads)
             {
                 # Success or error?
                 if ($Null -eq $download.Error)
                 {
+                    [void]$successful.Add($download.FileName)
+
                     if ($cleanupSourceFolder) {
                         Write-Host "Download of $($download.FileName) succeeded, removing from source"
                         # Download succeeded, remove file from source
@@ -59,6 +64,8 @@ function DownloadFolder (
                 }
                 else
                 {
+                    [void]$failed.Add($download.FileName)
+
                     Write-Host (
                         "Download of $($download.FileName) failed: $($download.Error.Message)")
                 }
@@ -70,12 +77,12 @@ function DownloadFolder (
             $session.Dispose()
         }
     
-        exit 0
+        $(0, $successful, $failed)
     }
     catch
     {
         Write-Host "Error: $($_.Exception.Message)"
-        exit 1
+        $(1, $successful, $failed)
     }
 }
 
@@ -109,13 +116,18 @@ function UploadFolder (
             # (note that $synchronizationResult.Downloads is the only operation
             # collection of SynchronizationResult that can contain any items,
             # as we are not removing nor uploading anything)
-    
+
+            $successful = [System.Collections.ArrayList]::new()
+            $failed = [System.Collections.ArrayList]::new()
+
             # Iterate over every download
             foreach ($upload in $synchronizationResult.Uploads)
             {
                 # Success or error?
                 if ($Null -eq $upload.Error)
                 {
+                    [void]$successful.Add($upload.FileName)
+
                     if ($cleanupSourceFolder) {
                         Write-Host "Upload of $($upload.FileName) succeeded, removing from source"
                         # Upload succeeded, remove file from source
@@ -139,6 +151,8 @@ function UploadFolder (
                 }
                 else
                 {
+                    [void]$failed.Add($upload.FileName)
+
                     Write-Host (
                         "Upload of $($upload.FileName) failed: $($upload.Error.Message)")
                 }
@@ -150,11 +164,11 @@ function UploadFolder (
             $session.Dispose()
         }
     
-        exit 0
+        $(0, $successful, $failed)
     }
     catch
     {
         Write-Host "Error: $($_.Exception.Message)"
-        exit 1
+        $(1, $successful, $failed)
     }
 }
