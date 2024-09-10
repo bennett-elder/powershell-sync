@@ -21,7 +21,7 @@ function DownloadFolder (
     
             # Synchronize files to local directory, collect results
             $synchronizationResult = $session.SynchronizeDirectories(
-                [WinSCP.SynchronizationMode]::Local, $localPath, $remotePath, $False)
+                [WinSCP.SynchronizationMode]::Local, $localPath, $remotePath, $cleanupSourceFolder)
     
             # Deliberately not calling $synchronizationResult.Check
             # as that would abort our script on any error.
@@ -108,7 +108,7 @@ function UploadFolder (
 
             # Synchronize files from local directory, collect results
             $synchronizationResult = $session.SynchronizeDirectories(
-                [WinSCP.SynchronizationMode]::Remote, $localPath, $remotePath, $False)
+                [WinSCP.SynchronizationMode]::Remote, $localPath, $remotePath, $cleanupSourceFolder)
 
             # Deliberately not calling $synchronizationResult.Check
             # as that would abort our script on any error.
