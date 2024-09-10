@@ -21,6 +21,13 @@ function SyncFoldersUsingFullName([string]$FldrL, [string]$FldrR, [bool]$AlsoCop
     $LeftItems = Get-ChildItem -Recurse -Path $FldrL
     $RightItems = Get-ChildItem -Recurse -Path $FldrR
 
+    if ($null -eq $LeftItems) {
+        $LeftItems = @()
+    }
+    if ($null -eq $RightItems) {
+        $RightItems = @()
+    }
+
     $Result = Compare-Object -ReferenceObject $LeftItems -DifferenceObject $RightItems -IncludeEqual
 
     foreach ($Folder in $Result) {
