@@ -28,6 +28,9 @@ function SyncFoldersUsingFullName([string]$FldrL, [string]$FldrR, [bool]$AlsoCop
         $RightItems = @()
     }
 
+    $successful = [System.Collections.ArrayList]::new()
+    $failed = [System.Collections.ArrayList]::new()
+ 
     $Result = Compare-Object -ReferenceObject $LeftItems -DifferenceObject $RightItems -IncludeEqual
 
     foreach ($Folder in $Result) {
@@ -94,10 +97,18 @@ function SyncFoldersUsingFullName([string]$FldrL, [string]$FldrR, [bool]$AlsoCop
             }
             else
             {
-                Copy-Item -Path $SourcePath -Destination $TargetPath
+                try {
+                    Copy-Item -Path $SourcePath -Destination $TargetPath
+                    [void]$successful.Add($TargetPath)
+                }
+                catch {
+                    [void]$failed.Add($TargetPath)
+                }
             }
         }
     }
+
+    @(0, $successful, $failed)
 }
 
 function SyncFolders([string]$LeftFolder, [string]$RightFolder, [bool]$AlsoCopyDestToSource=$false)
