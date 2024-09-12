@@ -18,11 +18,19 @@ function DownloadFolder (
         {
             # Connect
             $session.Open($sessionOptions)
-    
+
+            # SynchronizeDirectories() appears to have a bug where it syncs into the current
+            # script folder in addition to the localPath specified
+
+            $start_folder = Get-Location
+            Set-Location -Path $localPath
+
             # Synchronize files to local directory, collect results
             $synchronizationResult = $session.SynchronizeDirectories(
                 [WinSCP.SynchronizationMode]::Local, $localPath, $remotePath, $cleanupSourceFolder)
-    
+
+            $start_folder | Set-Location
+
             # Deliberately not calling $synchronizationResult.Check
             # as that would abort our script on any error.
             # We will find any error in the loop below
@@ -106,9 +114,14 @@ function UploadFolder (
             # Connect
             $session.Open($sessionOptions)
 
+            $start_folder = Get-Location
+            Set-Location -Path $localPath
+
             # Synchronize files from local directory, collect results
             $synchronizationResult = $session.SynchronizeDirectories(
                 [WinSCP.SynchronizationMode]::Remote, $localPath, $remotePath, $cleanupSourceFolder)
+
+            $start_folder | Set-Location
 
             # Deliberately not calling $synchronizationResult.Check
             # as that would abort our script on any error.
