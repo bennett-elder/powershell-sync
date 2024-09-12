@@ -17,14 +17,18 @@ function CreateFolderStructure([string]$Path)
 
 function SyncFoldersUsingFullName([string]$FldrL, [string]$FldrR, [bool]$AlsoCopyDestToSource=$false, [string]$IncludeOnlyThisExtension="")
 {
+    write-host "IncludeOnlyThisExtension: $IncludeOnlyThisExtension"
+
     Write-Host "Preparing to copy $($FldrL) to $($FldrR)"
     if ($IncludeOnlyThisExtension -eq "")
     {
+        write-host "IncludeOnlyThisExtension is empty so including all files"
         $LeftItems = Get-ChildItem -Recurse -Path $FldrL
         $RightItems = Get-ChildItem -Recurse -Path $FldrR
     }
     else
     {
+        write-host "IncludeOnlyThisExtension is $IncludeOnlyThisExtension so including only *.$IncludeOnlyThisExtension files"
         $LeftItems = Get-ChildItem -Recurse -Path $FldrL -Filter "*.$IncludeOnlyThisExtension"
         $RightItems = Get-ChildItem -Recurse -Path $FldrR -Filter "*.$IncludeOnlyThisExtension"
     }
@@ -121,7 +125,8 @@ function SyncFoldersUsingFullName([string]$FldrL, [string]$FldrR, [bool]$AlsoCop
 
 function SyncFolders([string]$LeftFolder, [string]$RightFolder, [bool]$AlsoCopyDestToSource=$false, [string]$IncludeOnlyThisExtension="")
 {
-    SyncFoldersUsingFullName -FldrL (Get-Item -Path $LeftFolder).FullName -FldrR (Get-Item -Path $RightFolder).FullName -AlsoCopyDestToSource $AlsoCopyDestToSource -IncludeOnlyThisExtension=$IncludeOnlyThisExtension
+    #write-host "IncludeOnlyThisExtension: $IncludeOnlyThisExtension"
+    SyncFoldersUsingFullName -FldrL (Get-Item -Path $LeftFolder).FullName -FldrR (Get-Item -Path $RightFolder).FullName -AlsoCopyDestToSource $AlsoCopyDestToSource -IncludeOnlyThisExtension $IncludeOnlyThisExtension
 }
 
 ########
