@@ -10,7 +10,7 @@ function DownloadFolder (
     try
     {
         # Load WinSCP .NET assembly
-        Add-Type -Path "WinSCPnet.dll"
+        Add-Type -Path "C:\Program Files (x86)\WinSCP\WinSCPnet.dll"
     
         $session = New-Object WinSCP.Session
     
