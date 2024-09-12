@@ -119,3 +119,10 @@ function SyncFolders([string]$LeftFolder, [string]$RightFolder, [bool]$AlsoCopyD
 ########
 # end from https://gist.github.com/lafleurh/a3877a8604758892637c3612f76bc0e3
 ########
+
+function SyncFoldersForExtension([string]$LeftFolder, [string]$RightFolder, [string]$Extension, [bool]$AlsoCopyDestToSource=$false)
+{
+    $LeftFull = Join-Path -Path $LeftFolder -ChildPath "*.$Extension"
+    $RightFull = Join-Path -Path $RightFolder -ChildPath "*.$Extension" 
+    SyncFoldersUsingFullName -FldrL (Get-Item -Path $LeftFull).FullName -FldrR (Get-Item -Path $RightFull).FullName -AlsoCopyDestToSource $AlsoCopyDestToSource
+}
