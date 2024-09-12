@@ -15,11 +15,19 @@ function CreateFolderStructure([string]$Path)
     }
 }
 
-function SyncFoldersUsingFullName([string]$FldrL, [string]$FldrR, [bool]$AlsoCopyDestToSource=$false)
+function SyncFoldersUsingFullName([string]$FldrL, [string]$FldrR, [bool]$AlsoCopyDestToSource=$false, [string]$IncludeOnlyThisExtension="")
 {
     Write-Host "Preparing to copy $($FldrL) to $($FldrR)"
-    $LeftItems = Get-ChildItem -Recurse -Path $FldrL
-    $RightItems = Get-ChildItem -Recurse -Path $FldrR
+    if ($IncludeOnlyThisExtension -eq "")
+    {
+        $LeftItems = Get-ChildItem -Recurse -Path $FldrL
+        $RightItems = Get-ChildItem -Recurse -Path $FldrR
+    }
+    else
+    {
+        $LeftItems = Get-ChildItem -Recurse -Path $FldrL -Filter "*.$IncludeOnlyThisExtension"
+        $RightItems = Get-ChildItem -Recurse -Path $FldrR -Filter "*.$IncludeOnlyThisExtension"
+    }
 
     if ($null -eq $LeftItems) {
         $LeftItems = @()
@@ -111,18 +119,11 @@ function SyncFoldersUsingFullName([string]$FldrL, [string]$FldrR, [bool]$AlsoCop
     @(0, $successful, $failed)
 }
 
-function SyncFolders([string]$LeftFolder, [string]$RightFolder, [bool]$AlsoCopyDestToSource=$false)
+function SyncFolders([string]$LeftFolder, [string]$RightFolder, [bool]$AlsoCopyDestToSource=$false, [string]$IncludeOnlyThisExtension="")
 {
-    SyncFoldersUsingFullName -FldrL (Get-Item -Path $LeftFolder).FullName -FldrR (Get-Item -Path $RightFolder).FullName -AlsoCopyDestToSource $AlsoCopyDestToSource
+    SyncFoldersUsingFullName -FldrL (Get-Item -Path $LeftFolder).FullName -FldrR (Get-Item -Path $RightFolder).FullName -AlsoCopyDestToSource $AlsoCopyDestToSource -IncludeOnlyThisExtension=$IncludeOnlyThisExtension
 }
 
 ########
 # end from https://gist.github.com/lafleurh/a3877a8604758892637c3612f76bc0e3
 ########
-
-function SyncFoldersForExtension([string]$LeftFolder, [string]$RightFolder, [string]$Extension, [bool]$AlsoCopyDestToSource=$false)
-{
-    $LeftFull = Join-Path -Path $LeftFolder -ChildPath "*.$Extension"
-    $RightFull = Join-Path -Path $RightFolder -ChildPath "*.$Extension" 
-    SyncFoldersUsingFullName -FldrL (Get-Item -Path $LeftFull).FullName -FldrR (Get-Item -Path $RightFull).FullName -AlsoCopyDestToSource $AlsoCopyDestToSource
-}
